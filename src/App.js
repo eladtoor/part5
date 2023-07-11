@@ -4,14 +4,19 @@ import loginService from './services/login';
 import { BlogForm } from './components/BlogForm';
 import { Togglable } from './components/Togglable';
 import { Blog } from './components/Blog';
+import Notification from './components/Notification';
+import { useDispatch, useSelector } from 'react-redux';
+import { setNotificationAsync } from './reducers/notificationReducer';
+import { createNewBlog, initializeBlogs } from './reducers/blogReducer';
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
+  const blogs = useSelector((state) => state.blogs);
+  const dispatch = useDispatch();
+  //const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
   const [userId, setuserId] = useState('');
-  const [message, setMessage] = useState('');
   const [newSavedBlogId, setNewSavedBlogId] = useState(null);
 
   const blogFormRef = useRef();
@@ -29,10 +34,7 @@ const App = () => {
       setUsername('');
       setPassword('');
     } catch (error) {
-      setMessage('wrong username or password');
-      setTimeout(() => {
-        setMessage('');
-      }, 5000);
+      dispatch(setNotificationAsync('wrong username or password', 5));
     }
   };
 
@@ -40,12 +42,13 @@ const App = () => {
     window.localStorage.removeItem('loggedBlogappUser');
     setUser(null);
   };
+
   useEffect(() => {
-    blogService.getAll().then((blogs) => {
-      blogs.sort((a, b) => b.likes - a.likes);
-      setBlogs(blogs);
-    });
-  }, []);
+    // blogService.getAll().then((blogs) => {
+    dispatch(initializeBlogs());
+    //   blogs.sort((a, b) => b.likes - a.likes);
+    //   setBlogs(blogs);
+  }, [dispatch]);
 
   useEffect(() => {
     const fetchUserId = async (user) => {
@@ -65,23 +68,25 @@ const App = () => {
   const createBlog = async (newBlog) => {
     blogFormRef.current.toggleVisibility();
 
-    const savedBlog = await blogService.create(newBlog);
-
+    //const savedBlog = await blogService.create(newBlog);
+    const savedBlog = await dispatch(createNewBlog(newBlog));
     setNewSavedBlogId(savedBlog.user);
-    setBlogs(blogs.concat(savedBlog));
-    setMessage(`a new blog ${savedBlog.title} by ${savedBlog.author} added`);
-    setTimeout(() => {
-      setMessage('');
-    }, 5000);
+    //setBlogs(blogs.concat(savedBlog));
+    // dispatch(
+    //   setNotificationAsync(
+    //     `a new blog ${savedBlog.title} by ${savedBlog.author} added`,
+    //     5
+    //   )
+    // );
   };
 
   const deleteBlog = async (id) => {
     await blogService.deleteBlog(id);
-    const deletedBlogIndex = blogs.findIndex((blog) => blog.id === id);
-    const updatedBlogs = blogs.filter(
-      (blog, index) => index !== deletedBlogIndex
-    );
-    setBlogs(updatedBlogs);
+    // const deletedBlogIndex = blogs.findIndex((blog) => blog.id === id);
+    // const updatedBlogs = blogs.filter(
+    //   (blog, index) => index !== deletedBlogIndex
+    // );
+    //setBlogs(updatedBlogs);
   };
 
   const increaseLike = async (id, likes) => {
@@ -96,7 +101,7 @@ const App = () => {
         likes: updatedBlogs[blogIndex].likes + 1,
       };
       updatedBlogs.sort((a, b) => b.likes - a.likes);
-      setBlogs(updatedBlogs);
+      // setBlogs(updatedBlogs);
     }
   };
 
@@ -112,7 +117,7 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
-        <h3>{message}</h3>
+        <Notification />
         <form onSubmit={loginUser}>
           <div>
             username:
@@ -144,7 +149,8 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <h3>{message}</h3>
+      <Notification />
+
       <div>
         {user.name} logged in{' '}
         <button id="logout-button" onClick={logout}>
