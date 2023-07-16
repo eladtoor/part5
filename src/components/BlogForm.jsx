@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
+import { Button, Form } from 'react-bootstrap';
 
 export const BlogForm = ({ createBlog }) => {
   const [title, setTitle] = useState('');
@@ -17,47 +18,49 @@ export const BlogForm = ({ createBlog }) => {
   return (
     <div>
       <h2>create new</h2>
-      <form onSubmit={addBlog}>
-        <div>
-          title:{' '}
-          <input
-            id="new-blog-title"
-            type="text"
-            value={title}
-            placeholder="title..."
-            onChange={({ target }) => {
-              setTitle(target.value);
-            }}
-          />
-        </div>
-        <div>
-          author:{' '}
-          <input
-            id="new-blog-author"
-            type="text"
-            value={author}
-            placeholder="author..."
-            onChange={({ target }) => {
-              setAuthor(target.value);
-            }}
-          />
-        </div>
-        <div>
-          url:{' '}
-          <input
-            id="new-blog-url"
-            type="text"
-            value={url}
-            placeholder="url..."
-            onChange={({ target }) => {
-              setUrl(target.value);
-            }}
-          />
-        </div>
-        <button id="new-blog-create-btn" type="submit">
-          create
-        </button>
-      </form>
+      <Form onSubmit={addBlog}>
+        <Form.Group>
+          <div>
+            <Form.Label>title:</Form.Label>
+            <Form.Control
+              type="text"
+              name="title"
+              value={title}
+              placeholder="title..."
+              onChange={({ target }) => {
+                setTitle(target.value);
+              }}
+            />
+          </div>
+          <div>
+            <Form.Label>author:</Form.Label>
+            <Form.Control
+              type="text"
+              name="author"
+              value={author}
+              placeholder="author..."
+              onChange={({ target }) => {
+                setAuthor(target.value);
+              }}
+            />
+          </div>
+          <div>
+            <Form.Label>url:</Form.Label>
+            <Form.Control
+              type="text"
+              name="url"
+              value={url}
+              placeholder="url..."
+              onChange={({ target }) => {
+                setUrl(target.value);
+              }}
+            />
+          </div>
+          <Button variant="primary" type="submit">
+            create
+          </Button>
+        </Form.Group>
+      </Form>
     </div>
   );
 };

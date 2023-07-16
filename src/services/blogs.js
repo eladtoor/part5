@@ -46,6 +46,10 @@ const getUserId = async (token) => {
   return response;
 };
 
+const createComment = async (id, comment) => {
+  const response = await axios.post(`${baseUrl}/${id}/comments`, { comment });
+  return response.data;
+};
 export default {
   getAll,
   create,
@@ -54,5 +58,6 @@ export default {
   getUserId,
   deleteBlog,
   getUserById,
+  createComment,
 };
 
